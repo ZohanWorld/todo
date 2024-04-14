@@ -1,7 +1,7 @@
 import { formatDistance } from 'date-fns'
 import './task.css'
 
-function Task({ description, done, deleteItem, timeStamp }) {
+function Task({ description, done, editItem, deleteItem, timeStamp }) {
   return (
     <div className="view">
       <input className="toggle" type="checkbox" checked={done} readOnly />
@@ -9,7 +9,7 @@ function Task({ description, done, deleteItem, timeStamp }) {
         <span className="description">{description} </span>
         <span className="created">created {formatDistance(timeStamp, Date.now())}</span>
       </label>
-      <button className="icon icon-edit" type="button" />
+      <button className="icon icon-edit" type="button" onClick={editItem} />
       <button className="icon icon-destroy" onClick={deleteItem} type="button" />
     </div>
   )

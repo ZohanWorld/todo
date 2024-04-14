@@ -13,7 +13,7 @@ class App extends Component {
 
   // eslint-disable-next-line react/state-in-constructor
   state = {
-    data: [this.createItem('Completed task'), this.createItem('Editing task'), this.createItem('Active task')],
+    data: [],
   }
 
   addItem = (description) => {
@@ -43,11 +43,34 @@ class App extends Component {
     })
   }
 
+  changeValue = (text, id) => {
+    this.setState(({ data }) => {
+      const idx = data.findIndex((value) => value.id === id)
+      const oldItem = data[idx]
+      const newItem = { ...oldItem, description: text, edit: false }
+      const newArray = [...data.slice(0, idx), newItem, ...data.slice(idx + 1)]
+      return {
+        data: newArray,
+      }
+    })
+  }
+
+  editItem = (id, e) => {
+    e.stopPropagation()
+    this.setState(({ data }) => {
+      return {
+        data: this.toggleProperty(data, id, 'edit'),
+      }
+    })
+  }
+
   showCompleted = () => {
     this.setState(({ data }) => {
       const newArray = [...data].map((value) => {
         if (!value.done) {
           value.show = false
+        } else {
+          value.show = true
         }
         return value
       })
@@ -62,6 +85,8 @@ class App extends Component {
       const newArray = [...data].map((value) => {
         if (value.done) {
           value.show = false
+        } else {
+          value.show = true
         }
         return value
       })
@@ -104,6 +129,7 @@ class App extends Component {
       description,
       done: false,
       show: true,
+      edit: false,
       timeStamp: Date.now(),
       id: this.maxId++,
     }
@@ -118,7 +144,13 @@ class App extends Component {
           <NewTasksForm addItem={this.addItem} />
         </header>
         <main className="main">
-          <TaskList data={data} toggleDone={this.toggleDone} deleteItem={this.deleteItem} />
+          <TaskList
+            data={data}
+            toggleDone={this.toggleDone}
+            deleteItem={this.deleteItem}
+            editItem={this.editItem}
+            changeValue={this.changeValue}
+          />
           <Footer
             data={data}
             showCompleted={this.showCompleted}
