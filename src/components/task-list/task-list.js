@@ -30,7 +30,7 @@ export default class TaskList extends Component {
   render() {
     const { data, toggleDone, deleteItem, editItem } = this.props
     const elems = data.map((value) => {
-      const { id, description, done, show, edit, timeStamp } = value
+      const { id, description, done, show, edit, timeStamp, timer } = value
       let className
       if (done) {
         className = 'completed'
@@ -43,13 +43,15 @@ export default class TaskList extends Component {
       }
 
       return (
-        <li className={className} key={id} onClick={() => toggleDone(id)}>
+        <li className={className} key={id}>
           <Task
             description={description}
             done={done}
+            timer={timer}
             deleteItem={(e) => deleteItem(id, e)}
             editItem={(e) => editItem(id, e)}
             timeStamp={timeStamp}
+            toggleDone={(e) => toggleDone(id, e)}
           />
           <form onSubmit={(e) => this.formSubmit(id, e)}>
             <input type="text" className="edit" onChange={this.inputChange} />

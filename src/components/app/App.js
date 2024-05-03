@@ -1,3 +1,4 @@
+/* eslint-disable react/state-in-constructor */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
@@ -11,15 +12,14 @@ import TaskList from '../task-list/task-list'
 class App extends Component {
   maxId = 100
 
-  // eslint-disable-next-line react/state-in-constructor
   state = {
     data: [],
   }
 
-  addItem = (description) => {
+  addItem = (description, timer) => {
     this.setState(({ data }) => {
       return {
-        data: [...data, this.createItem(description)],
+        data: [...data, this.createItem(description, timer)],
       }
     })
   }
@@ -124,12 +124,13 @@ class App extends Component {
     return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)]
   }
 
-  createItem(description) {
+  createItem(description, timer) {
     return {
       description,
       done: false,
       show: true,
       edit: false,
+      timer,
       timeStamp: Date.now(),
       id: this.maxId++,
     }
