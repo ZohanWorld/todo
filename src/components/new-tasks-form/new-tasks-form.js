@@ -36,7 +36,7 @@ export default class NewTasksForm extends Component {
   formSubmit = (e) => {
     const { addItem } = this.props
     const { text, min, sec } = this.state
-    const timer = { minutes: min, seconds: sec }
+    const timer = min * 60 + parseInt(sec, 10)
     e.preventDefault()
     addItem(text, timer)
     this.setState({
