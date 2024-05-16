@@ -18,7 +18,7 @@
     "requireConfigFile": false,
     "babelOptions": {
       "presets": ["@babel/preset-react"]
-   },
+    },
     "ecmaFeatures": {
       "jsx": true
     },
@@ -27,6 +27,7 @@
   },
   "plugins": ["react", "prettier", "import"],
   "rules": {
+    "consistent-return": "off",
     "indent": ["error", 2],
     "prettier/prettier": "warn",
     "linebreak-style": [0, "unix"],

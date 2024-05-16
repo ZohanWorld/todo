@@ -2,71 +2,40 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import { Component } from 'react'
+import { useState } from 'react'
 
 import Footer from '../footer/footer'
 import NewTasksForm from '../new-tasks-form/new-tasks-form'
 import './App.css'
 import TaskList from '../task-list/task-list'
 
-class App extends Component {
-  maxId = 100
+function App() {
+  let maxId = 100
 
-  state = {
-    data: [],
-  }
+  const [data, setData] = useState([])
 
-  addItem = (description, timer) => {
-    this.setState(({ data }) => {
-      return {
-        data: [...data, this.createItem(description, timer)],
-      }
-    })
-  }
-
-  toggleDone = (id) => {
-    this.setState(({ data }) => {
-      return {
-        data: this.toggleProperty(data, id, 'done'),
-      }
-    })
-  }
-
-  deleteItem = (id, e) => {
+  const deleteItem = (id, e) => {
     e.stopPropagation()
-    this.setState(({ data }) => {
-      const idx = data.findIndex((value) => value.id === id)
-      const newArray = [...data.slice(0, idx), ...data.slice(idx + 1)]
-      return {
-        data: newArray,
-      }
+    setData((state) => {
+      const idx = state.findIndex((value) => value.id === id)
+      const newArray = [...state.slice(0, idx), ...state.slice(idx + 1)]
+      return newArray
     })
   }
 
-  changeValue = (text, id) => {
-    this.setState(({ data }) => {
-      const idx = data.findIndex((value) => value.id === id)
-      const oldItem = data[idx]
+  const changeValue = (text, id) => {
+    setData((state) => {
+      const idx = state.findIndex((value) => value.id === id)
+      const oldItem = state[idx]
       const newItem = { ...oldItem, description: text, edit: false }
-      const newArray = [...data.slice(0, idx), newItem, ...data.slice(idx + 1)]
-      return {
-        data: newArray,
-      }
+      const newArray = [...state.slice(0, idx), newItem, ...state.slice(idx + 1)]
+      return newArray
     })
   }
 
-  editItem = (id, e) => {
-    e.stopPropagation()
-    this.setState(({ data }) => {
-      return {
-        data: this.toggleProperty(data, id, 'edit'),
-      }
-    })
-  }
-
-  showCompleted = () => {
-    this.setState(({ data }) => {
-      const newArray = [...data].map((value) => {
+  const showCompleted = () => {
+    setData((state) => {
+      const newArray = [...state].map((value) => {
         if (!value.done) {
           value.show = false
         } else {
@@ -74,15 +43,13 @@ class App extends Component {
         }
         return value
       })
-      return {
-        data: newArray,
-      }
+      return newArray
     })
   }
 
-  showActive = () => {
-    this.setState(({ data }) => {
-      const newArray = [...data].map((value) => {
+  const showActive = () => {
+    setData((state) => {
+      const newArray = [...state].map((value) => {
         if (value.done) {
           value.show = false
         } else {
@@ -90,41 +57,44 @@ class App extends Component {
         }
         return value
       })
-      return {
-        data: newArray,
-      }
+      return newArray
     })
   }
 
-  showAll = () => {
-    this.setState(({ data }) => {
-      const newArray = [...data].map((value) => {
+  const showAll = () => {
+    setData((state) => {
+      const newArray = [...state].map((value) => {
         value.show = true
         return value
       })
-      return {
-        data: newArray,
-      }
+      return newArray
     })
   }
 
-  clearCompleted = () => {
-    this.setState(({ data }) => {
-      const newArray = data.filter((value) => value.done === false)
-      return {
-        data: newArray,
-      }
+  const clearCompleted = () => {
+    setData((state) => {
+      const newArray = state.filter((value) => value.done === false)
+      return newArray
     })
   }
 
-  toggleProperty(arr, id, propName) {
+  const toggleProperty = (arr, id, propName) => {
     const idx = arr.findIndex((value) => value.id === id)
     const oldItem = arr[idx]
     const newItem = { ...oldItem, [propName]: !oldItem[propName] }
     return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)]
   }
 
-  createItem(description, timer) {
+  const toggleDone = (id) => {
+    setData((state) => toggleProperty(state, id, 'done'))
+  }
+
+  const editItem = (id, e) => {
+    e.stopPropagation()
+    setData((state) => toggleProperty(state, id, 'edit'))
+  }
+
+  const createItem = (description, timer) => {
     return {
       description,
       done: false,
@@ -132,37 +102,38 @@ class App extends Component {
       edit: false,
       timer,
       timeStamp: Date.now(),
-      id: this.maxId++,
+      id: maxId++,
     }
   }
 
-  render() {
-    const { data } = this.state
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTasksForm addItem={this.addItem} />
-        </header>
-        <main className="main">
-          <TaskList
-            data={data}
-            toggleDone={this.toggleDone}
-            deleteItem={this.deleteItem}
-            editItem={this.editItem}
-            changeValue={this.changeValue}
-          />
-          <Footer
-            data={data}
-            showCompleted={this.showCompleted}
-            showAll={this.showAll}
-            showActive={this.showActive}
-            clearCompleted={this.clearCompleted}
-          />
-        </main>
-      </section>
-    )
+  const addItem = (description, timer) => {
+    setData((state) => [...state, createItem(description, timer)])
   }
+
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTasksForm addItem={addItem} />
+      </header>
+      <main className="main">
+        <TaskList
+          data={data}
+          toggleDone={toggleDone}
+          deleteItem={deleteItem}
+          editItem={editItem}
+          changeValue={changeValue}
+        />
+        <Footer
+          data={data}
+          showCompleted={showCompleted}
+          showAll={showAll}
+          showActive={showActive}
+          clearCompleted={clearCompleted}
+        />
+      </main>
+    </section>
+  )
 }
 
 export default App
